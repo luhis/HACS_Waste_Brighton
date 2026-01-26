@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BrightonBins/BrightonBins.csproj" />
+  <Project Path="UnitTests/UnitTests.csproj" />
+</Solution>
