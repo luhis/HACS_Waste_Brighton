@@ -23,9 +23,6 @@ var httpClient = new HttpClient();
 var initResponse = await httpClient.GetAsync(INIT_URL);
 initResponse.EnsureSuccessStatusCode();
 
-var collectionsCookies = initResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
-
-
 var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<string, object>() {
     { "action", "get_session_data" },
     {"params", new Dictionary<string, object>() {
@@ -41,10 +38,11 @@ var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<
 });
 initPostResponse.EnsureSuccessStatusCode();
 var initPostDto = await initPostResponse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
-var responseHeaders = initPostResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
+var cookiesFromInit = initPostResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
 
 httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken); // cookies issue?
-httpClient.DefaultRequestHeaders.Add("Cookie", string.Join("; ", responseHeaders.Concat(collectionsCookies)));
+var finalCookies = cookiesFromInit.Concat([$"__Host-XASID={cookiesFromInit.Single(a => a.StartsWith("xasid=")).Split("=").ElementAt(1)}"]);
+httpClient.DefaultRequestHeaders.Add("Cookie", finalCookies);
 
 var operationsResponse = await httpClient.GetAsync(operations_url);
 operationsResponse.EnsureSuccessStatusCode();
@@ -66,11 +64,7 @@ var req = new RequestDto()
     Params = new() { { "Address", new() { { "guid", addressGuid } } } }
 };
 
-var json = JsonSerializer.Serialize(req, serialiserSettings);
-
-var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(API_URL, req);
-
-var x = await postcodeLookUpResonse.Content.ReadAsStringAsync();
+var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(API_URL, req, serialiserSettings);
 
 postcodeLookUpResonse.EnsureSuccessStatusCode();
 
