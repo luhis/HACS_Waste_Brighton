@@ -8,6 +8,7 @@ using System.Text.Json;
 Console.WriteLine("Hello, World!");
 
 const string postCode = "BN1 8NT";
+const long Uprn = 22058876;
 var serialiserSettings = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 serialiserSettings.Converters.Add(new AutoNumberToStringConverter());
 serialiserSettings.PropertyNamingPolicy= JsonNamingPolicy.CamelCase;
@@ -38,35 +39,44 @@ var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<
 });
 initPostResponse.EnsureSuccessStatusCode();
 var initPostDto = await initPostResponse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
-var cookiesFromInit = initPostResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
+//var cookiesFromInit = initPostResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
 
-httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken); // cookies issue?
-var finalCookies = cookiesFromInit.Concat([$"__Host-XASID={cookiesFromInit.Single(a => a.StartsWith("xasid=")).Split("=").ElementAt(1)}"]);
-httpClient.DefaultRequestHeaders.Add("Cookie", finalCookies);
+httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken);
+//var finalCookies = cookiesFromInit.Concat([$"__Host-XASID={cookiesFromInit.Single(a => a.StartsWith("xasid=")).Split("=").ElementAt(1)}"]);
+//httpClient.DefaultRequestHeaders.Add("Cookie", finalCookies);
 
 var operationsResponse = await httpClient.GetAsync(operations_url);
 operationsResponse.EnsureSuccessStatusCode();
 
 var operationsResponseStr = await operationsResponse.Content.ReadAsStringAsync();
 
-var postcodeOperationId = RegexTools.GetPostCodeOperationId(operationsResponseStr);
-
-
 var addressGuid = initPostDto.Objects.Where(a => a.ObjectType == "BHCCTheme.Address").Select(a => a.Guid).Single();
 var newChangesSet = initPostDto.Changes;
 newChangesSet[long.Parse(addressGuid)].Add("SearchString", new HashValue() { Value = postCode });
 
-var req = new RequestDto()
+
+var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(API_URL, new RequestDto()
 {
-    OperationId = postcodeOperationId,
+    OperationId = RegexTools.GetPostCodeOperationId(operationsResponseStr),
     Changes = newChangesSet,
     Objects = initPostDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
     Params = new() { { "Address", new() { { "guid", addressGuid } } } }
-};
-
-var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(API_URL, req, serialiserSettings);
+}, serialiserSettings);
 
 postcodeLookUpResonse.EnsureSuccessStatusCode();
+var postCodeLookupDto = await postcodeLookUpResonse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
+
+var uprnChangeElement = postCodeLookupDto.Changes.First(a => a.Value.ContainsKey("uprn") && long.Parse(a.Value["uprn"].Value) == Uprn);
+
+var collectionGuid = postCodeLookupDto.Objects.Where(a => long.Parse(a.Guid) == uprnChangeElement.Key).Select(a => a.Guid).Single();
+var scheduleResponse = await httpClient.PostAsJsonAsync(API_URL, new RequestDto()
+{
+    OperationId = RegexTools.GetScheduleOperationId(operationsResponseStr),
+    Changes = newChangesSet,
+    Objects = postCodeLookupDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
+    Params = new() { { "Collection", new() { { "guid", collectionGuid } } } }
+}, serialiserSettings);
+scheduleResponse.EnsureSuccessStatusCode();
 
 
 Console.ReadLine();
