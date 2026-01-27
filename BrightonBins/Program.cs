@@ -39,11 +39,8 @@ var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<
 });
 initPostResponse.EnsureSuccessStatusCode();
 var initPostDto = await initPostResponse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
-//var cookiesFromInit = initPostResponse.Headers.Single(a => a.Key == "Set-Cookie").Value.Select(a => a.Split("; ").First());
 
 httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken);
-//var finalCookies = cookiesFromInit.Concat([$"__Host-XASID={cookiesFromInit.Single(a => a.StartsWith("xasid=")).Split("=").ElementAt(1)}"]);
-//httpClient.DefaultRequestHeaders.Add("Cookie", finalCookies);
 
 var operationsResponse = await httpClient.GetAsync(operations_url);
 operationsResponse.EnsureSuccessStatusCode();
