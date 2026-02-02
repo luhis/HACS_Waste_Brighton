@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using BrightonBins.Dtos;
+using System.Text.RegularExpressions;
 
 namespace BrightonBins;
 

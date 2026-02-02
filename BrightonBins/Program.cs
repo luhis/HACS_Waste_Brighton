@@ -1,18 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BrightonBins;
-using BrightonBins.Converter;
 using BrightonBins.Dtos;
-using System.Net.Http.Json;
-using System.Text.Json;
+
+// To run in browser, start here:
+// https://enviroservices.brighton-hove.gov.uk/link/collections
 
 Console.WriteLine("Hello, World!");
 
 const string postCode = "BN1 8NT";
 const long Uprn = 22058876;
-var serialiserSettings = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-serialiserSettings.Converters.Add(new AutoNumberToStringConverter());
-serialiserSettings.PropertyNamingPolicy= JsonNamingPolicy.CamelCase;
-serialiserSettings.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 
 var BASE_URL = "https://enviroservices.brighton-hove.gov.uk/";
 var INIT_URL = $"{BASE_URL}link/collections";
@@ -24,7 +20,7 @@ var httpClient = new HttpClient();
 var initResponse = await httpClient.GetAsync(INIT_URL);
 initResponse.EnsureSuccessStatusCode();
 
-var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<string, object>() {
+var initPostDto = await httpClient.PostAsJsonTypedAsync<Dictionary<string, object>, ResponseDto>(API_URL, new Dictionary<string, object>() {
     { "action", "get_session_data" },
     {"params", new Dictionary<string, object>() {
         { "hybrid", false},
@@ -37,8 +33,6 @@ var initPostResponse = await httpClient.PostAsJsonAsync(API_URL, new Dictionary<
         { "version", 2}
     } }
 });
-initPostResponse.EnsureSuccessStatusCode();
-var initPostDto = await initPostResponse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
 
 httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken);
 
@@ -52,28 +46,32 @@ var newChangesSet = initPostDto.Changes;
 newChangesSet[long.Parse(addressGuid)].Add("SearchString", new HashValue() { Value = postCode });
 
 
-var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(API_URL, new RequestDto()
+var postCodeLookupDto = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, new RequestDto()
 {
     OperationId = RegexTools.GetPostCodeOperationId(operationsResponseStr),
     Changes = newChangesSet,
     Objects = initPostDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
     Params = new() { { "Address", new() { { "guid", addressGuid } } } }
-}, serialiserSettings);
+});
 
-postcodeLookUpResonse.EnsureSuccessStatusCode();
-var postCodeLookupDto = await postcodeLookUpResonse.Content.ReadFromJsonAsync<ResponseDto>(serialiserSettings);
+var q = postCodeLookupDto.Changes.Where(a => a.Value.ContainsKey("uprn") && long.Parse(a.Value["uprn"].Value) == Uprn);
 
-var uprnChangeElement = postCodeLookupDto.Changes.First(a => a.Value.ContainsKey("uprn") && long.Parse(a.Value["uprn"].Value) == Uprn);
+var uprnChangeElement = q.First();
 
-var collectionGuid = postCodeLookupDto.Objects.Where(a => long.Parse(a.Guid) == uprnChangeElement.Key).Select(a => a.Guid).Single();
-var scheduleResponse = await httpClient.PostAsJsonAsync(API_URL, new RequestDto()
+var collectionGuid = postCodeLookupDto.Objects.Where(a => long.Parse(a.Guid) == uprnChangeElement.Key).Single();
+
+var newNewChangesSet = postCodeLookupDto.Changes;
+newNewChangesSet[uprnChangeElement.Key] = uprnChangeElement.Value;
+
+var rdto = new RequestDto()
 {
     OperationId = RegexTools.GetScheduleOperationId(operationsResponseStr),
-    Changes = newChangesSet,
+    Changes = newNewChangesSet,
     Objects = postCodeLookupDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
-    Params = new() { { "Collection", new() { { "guid", collectionGuid } } } }
-}, serialiserSettings);
-scheduleResponse.EnsureSuccessStatusCode();
+    Params = new() { { "Collection", new() { { "guid", collectionGuid.Guid } } } }
+};
+
+var scheduleResponse = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, rdto);
 
 
 Console.ReadLine();
