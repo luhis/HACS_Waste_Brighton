@@ -5,9 +5,9 @@ namespace BrightonBins;
 
 public static class RestTools
 {
-    private static readonly System.Text.Json.JsonSerializerOptions serialiserSettings = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions serialiserSettings = new(JsonSerializerDefaults.Web)
     {
-        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
         Converters =
         {
@@ -17,6 +17,12 @@ public static class RestTools
     public static async Task<TR> PostAsJsonTypedAsync<T, TR>(this HttpClient httpClient, string url, T data)
     {
         var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(url, data, serialiserSettings);
+
+        if (postcodeLookUpResonse.IsSuccessStatusCode == false)
+        {
+            var s = JsonSerializer.Serialize(data, serialiserSettings);
+            Console.WriteLine(s);
+        }
 
         postcodeLookUpResonse.EnsureSuccessStatusCode();
         return await postcodeLookUpResonse.Content.ReadFromJsonAsync<TR>(serialiserSettings);
