@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BrightonBins.Dtos;
+﻿namespace BrightonBins.Dtos;
 
 public class RequestDto
 {

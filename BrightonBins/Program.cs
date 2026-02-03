@@ -1,10 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BrightonBins;
 using BrightonBins.Dtos;
+using System.Linq;
 using System.Text.Json;
 
 // To run in browser, start here:
 // https://enviroservices.brighton-hove.gov.uk/link/collections
+// 3208814
 
 Console.WriteLine("Brighton Bins Collection Lookup");
 
@@ -121,7 +123,7 @@ Console.WriteLine("\n=== Preparing collection schedule request ===");
 
 // Merge changes from both responses
 var scheduleChanges = new Dictionary<long, Dictionary<string, HashValue>>(
-    postCodeLookupDto.Changes.ToDictionary(
+    postCodeLookupDto.Changes.Concat(initPostDto.Changes).DistinctBy(a => a.Key).ToDictionary(
         kvp => kvp.Key,
         kvp => new Dictionary<string, HashValue>(kvp.Value)
     )
@@ -134,6 +136,7 @@ if (!scheduleChanges.ContainsKey(collectionChangeKey))
     scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
 }
 scheduleChanges[collectionChangeKey]["selectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
+// use changes from get session data
 
 Console.WriteLine($"Collection GUID: {collectionGuid}");
 Console.WriteLine($"Setting selectedAddress to UPRN change ID: {uprnChangeElement.Key}");

@@ -21,7 +21,8 @@ public static class RestTools
         if (postcodeLookUpResonse.IsSuccessStatusCode == false)
         {
             var s = JsonSerializer.Serialize(data, serialiserSettings);
-            Console.WriteLine(s);
+            var error = await postcodeLookUpResonse.Content.ReadAsStringAsync();
+            Console.WriteLine($"{error} {s}");
         }
 
         postcodeLookUpResonse.EnsureSuccessStatusCode();
