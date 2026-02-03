@@ -1,7 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using BrightonBins;
 using BrightonBins.Client;
-using BrightonBins.Dtos;
 
 // To run in browser, start here:
 // https://enviroservices.brighton-hove.gov.uk/link/collections
@@ -12,8 +10,7 @@ Console.WriteLine("Brighton Bins Collection Lookup");
 const string postCode = "BN1 8NT";
 const long Uprn = 22058876;
 
-
-IMendixClient client = new MendixClient();
+IMendixClient client = new MendixClient(new HttpClient());
 
 await client.GetSchedule(postCode, Uprn);
 

@@ -1,26 +1,14 @@
 ﻿using BrightonBins.Dtos;
 
-namespace BrightonBins;
+namespace BrightonBins.Client;
 
-public class MendixClient : IMendixClient
+public class MendixClient(HttpClient httpClient) : IMendixClient
 {
-
     const string BASE_URL = "https://enviroservices.brighton-hove.gov.uk/";
     const string INIT_URL = $"{BASE_URL}link/collections";
     const string API_URL = $"{BASE_URL}xas/";
     const string operations_url = $"{BASE_URL}pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml";
-
-    public async Task GetSchedule(string postCode, long uprn)
-    {
-        var httpClient = new HttpClient();
-
-        // Step 1: Initialize session
-        Console.WriteLine("Initializing session...");
-        var initResponse = await httpClient.GetStringAsync(INIT_URL);
-
-        // Step 2: Get session data
-        Console.WriteLine("Getting session data...");
-        var sessionDataDto = await httpClient.PostAsJsonTypedAsync<Dictionary<string, object>, ResponseDto>(API_URL, new Dictionary<string, object>() {
+    private readonly IReadOnlyDictionary<string, object> GetSessionDataRequest = new Dictionary<string, object>() {
             { "action", "get_session_data" },
             {"params", new Dictionary<string, object?>() {
                 { "hybrid", false},
@@ -32,7 +20,17 @@ public class MendixClient : IMendixClient
                 { "preferredLanguages", new[] {"en-GB", "en-US", "en" } },
                 { "version", 2}
             } }
-        });
+        };
+
+    async Task<IReadOnlyList<ObjectDto>> IMendixClient.GetSchedule(string postCode, long uprn)
+    {
+        // Step 1: Initialize session
+        Console.WriteLine("Initializing session...");
+        var initResponse = await httpClient.GetStringAsync(INIT_URL);
+
+        // Step 2: Get session data
+        Console.WriteLine("Getting session data...");
+        var sessionDataDto = await httpClient.PostAsJsonTypedAsync<IReadOnlyDictionary<string, object>, ResponseDto>(API_URL, GetSessionDataRequest);
 
         Console.WriteLine("\n=== DEBUG: Initial Session Objects ===");
         var collectionObject = sessionDataDto.Objects.FirstOrDefault(o => o.ObjectType == "Collections.Collection");
@@ -55,7 +53,7 @@ public class MendixClient : IMendixClient
                 Console.WriteLine($"  Type: {obj.ObjectType}, GUID: {obj.Guid}");
             }
             Console.ReadLine();
-            return;
+            throw new Exception("Fail");
         }
 
         var collectionGuid = collectionObject.Guid;
@@ -104,7 +102,7 @@ public class MendixClient : IMendixClient
                 Console.WriteLine($"  UPRN: {change.Value["uprn"].Value} (Change ID: {change.Key})");
             }
             Console.ReadLine();
-            return;
+            throw new Exception("Fail");
         }
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
@@ -156,17 +154,6 @@ public class MendixClient : IMendixClient
         Console.WriteLine($"Objects returned: {scheduleResponse.Objects.Length}");
         Console.WriteLine($"Changes returned: {scheduleResponse.Changes.Count}");
 
-        // Display collection information
-        foreach (var obj in scheduleResponse.Objects)
-        {
-            Console.WriteLine($"\n{obj.ObjectType}: {obj.Guid}");
-            if (obj.Attributes != null)
-            {
-                foreach (var attr in obj.Attributes)
-                {
-                    Console.WriteLine($"  {attr.Key}: {attr.Value.Value}");
-                }
-            }
-        }
+        return scheduleResponse.Objects;
     }
 }
