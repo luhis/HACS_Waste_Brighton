@@ -16,16 +16,23 @@ public static class RestTools
     };
     public static async Task<TR> PostAsJsonTypedAsync<T, TR>(this HttpClient httpClient, string url, T data)
     {
-        var postcodeLookUpResonse = await httpClient.PostAsJsonAsync(url, data, serialiserSettings);
+        var response = await httpClient.PostAsJsonAsync(url, data, serialiserSettings);
 
-        if (postcodeLookUpResonse.IsSuccessStatusCode == false)
+        if (response.IsSuccessStatusCode == false)
         {
             var s = JsonSerializer.Serialize(data, serialiserSettings);
-            var error = await postcodeLookUpResonse.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync();
             Console.WriteLine($"{error} {s}");
         }
 
-        postcodeLookUpResonse.EnsureSuccessStatusCode();
-        return await postcodeLookUpResonse.Content.ReadFromJsonAsync<TR>(serialiserSettings);
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<TR>(serialiserSettings))!;
+    }
+
+    public static async Task<string> GetAsString(this HttpClient httpClient, string url)
+    {
+        var response = await httpClient.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
     }
 }

@@ -1,0 +1,989 @@
+﻿{
+    "actionResult": null,
+    "changes": {
+        "14918190545923269": {
+            "changedDate": {
+                "hash": "gZkuzkMeNil8v93xRizfW6l1cwB0NcYjHG5WB8QD+ts=",
+                "value": 1770147940793
+            }
+        },
+        "32088147651587159": {
+            "DisplayCollections": {
+                "hash": "XASXv4RY6aB2sA8W81Vw/B8n4l998UjlgZcy5jQc6yg=",
+                "value": true
+            },
+            "DisplayAddressSearch": {
+                "hash": "9Btpb9h4rGICbyvBxjOWACEnRctBEuAn3rzA2kxKy60=",
+                "value": false
+            }
+        },
+        "3096225174164407": {
+            "changedDate": {
+                "hash": "X4kMXn+FqsBs4j5qeqle50zWJWX0PEswm7sTZMO9rhk=",
+                "value": 1770147940793
+            }
+        }
+    },
+    "commits": [
+        "26177173796583184",
+        "26177173796582490",
+        "26177173796582744",
+        "32088147651587159",
+        "26177173796583018",
+        "26177173796582793",
+        "26177173796583114",
+        "26177173796582632",
+        "26177173796582397"
+    ],
+    "committedObjectsOmitted": false,
+    "deletes": [],
+    "instructions": [
+        {
+            "args": {
+                "classnames": [
+                    "Collections.CollectionsReturned",
+                    "Collections.Collection"
+                ]
+            },
+            "target": "system",
+            "type": "refresh_class"
+        },
+        {
+            "args": {
+                "ObjectIds": [
+                    "26177173796582397",
+                    "26177173796582490",
+                    "26177173796582632",
+                    "26177173796582744",
+                    "26177173796582793",
+                    "26177173796583018",
+                    "26177173796583114",
+                    "26177173796583184",
+                    "32088147651587159"
+                ]
+            },
+            "target": "system",
+            "type": "refresh_object_list"
+        }
+    ],
+    "newpersistable": [],
+    "objects": [
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796583184",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "11955976"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-GW3-130226"
+                },
+                "Collection_Date": {
+                    "value": "13/02/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940801
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1770966000000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940792
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": false
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Garden 240L bin"
+                },
+                "Round_day": {
+                    "value": "Friday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "13 February 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "9"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67986667"
+                },
+                "Collection_type": {
+                    "value": "Garden Waste"
+                },
+                "WorkPackID": {
+                    "value": "14117"
+                },
+                "BartecStatus": {
+                    "value": "Not Started"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796582490",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "8505457"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-Ref 7 -290126"
+                },
+                "Collection_Date": {
+                    "value": "29/01/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940798
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1769670000000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940791
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": true
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Refuse 140L bin"
+                },
+                "Round_day": {
+                    "value": "Thursday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "29 January 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "5"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67985"
+                },
+                "Collection_type": {
+                    "value": "Refuse"
+                },
+                "WorkPackID": {
+                    "value": "24979"
+                },
+                "BartecStatus": {
+                    "value": "Closed-Complete"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796582744",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "10956905"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-Rec 9 -230126"
+                },
+                "Collection_Date": {
+                    "value": "23/01/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940798
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1769151600000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940791
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": true
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Recycling 240L bin"
+                },
+                "Round_day": {
+                    "value": "Friday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "23 January 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "11"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67985"
+                },
+                "Collection_type": {
+                    "value": "Recycling"
+                },
+                "WorkPackID": {
+                    "value": "25767"
+                },
+                "BartecStatus": {
+                    "value": "Closed-Complete"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.Collection",
+            "guid": "32088147651587159",
+            "attributes": {
+                "DisplayAssistedREC": {
+                    "value": false
+                },
+                "DisplayRoundChangeMessage": {
+                    "value": false
+                },
+                "DisplayCommunal": {
+                    "value": false
+                },
+                "Collections.Collection_Address": {
+                    "value": "3096225174164407"
+                },
+                "DisplayAssitedREF": {
+                    "value": false
+                },
+                "DisplayCalendarRec": {
+                    "value": false
+                },
+                "DisplayAssistedGW": {
+                    "value": false
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940793
+                },
+                "Collections.Collection_CHAS_Customer": {
+                    "value": null
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147697494
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "DisplayCollectionsButton": {
+                    "value": true
+                },
+                "DisplayCalendarGW": {
+                    "value": false
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "DisplayAddressSearch": {
+                    "value": true
+                },
+                "DisplayCollections": {
+                    "value": false
+                },
+                "Collections.Collection_Account": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796583018",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "6598899"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-NORTH 3-050226"
+                },
+                "Collection_Date": {
+                    "value": "05/02/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940801
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1770274800000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940792
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": false
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Kerbside Caddy bin"
+                },
+                "Round_day": {
+                    "value": "Thursday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "05 February 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "1"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67986667"
+                },
+                "Collection_type": {
+                    "value": "Food waste"
+                },
+                "WorkPackID": {
+                    "value": "55114"
+                },
+                "BartecStatus": {
+                    "value": "Not Started"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796582793",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "8619512"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-Ref 7 -050226"
+                },
+                "Collection_Date": {
+                    "value": "05/02/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940801
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1770274800000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940791
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": false
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Refuse 140L bin"
+                },
+                "Round_day": {
+                    "value": "Thursday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "05 February 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "1"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67985"
+                },
+                "Collection_type": {
+                    "value": "Refuse"
+                },
+                "WorkPackID": {
+                    "value": "24986"
+                },
+                "BartecStatus": {
+                    "value": "Not Started"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796583114",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "10897853"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-Rec 9 -060226"
+                },
+                "Collection_Date": {
+                    "value": "06/02/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940801
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1770361200000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940792
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": false
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Recycling 240L bin"
+                },
+                "Round_day": {
+                    "value": "Friday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "06 February 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "2"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67986667"
+                },
+                "Collection_type": {
+                    "value": "Recycling"
+                },
+                "WorkPackID": {
+                    "value": "25781"
+                },
+                "BartecStatus": {
+                    "value": "Not Started"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796582632",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "6631286"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-NORTH 3-290126"
+                },
+                "Collection_Date": {
+                    "value": "29/01/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940798
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1769670000000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940791
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": true
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Kerbside Caddy bin"
+                },
+                "Round_day": {
+                    "value": "Thursday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "29 January 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "5"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67985"
+                },
+                "Collection_type": {
+                    "value": "Food waste"
+                },
+                "WorkPackID": {
+                    "value": "55107"
+                },
+                "BartecStatus": {
+                    "value": "Closed-Complete"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        },
+        {
+            "objectType": "Collections.CollectionsReturned",
+            "guid": "26177173796582397",
+            "attributes": {
+                "AlreadyReported": {
+                    "value": false
+                },
+                "BartecJobID": {
+                    "value": "11955964"
+                },
+                "Has_wheelie_bin": {
+                    "value": null
+                },
+                "System.changedBy": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "gwSubscritpion": {
+                    "value": null
+                },
+                "Week_number": {
+                    "value": null
+                },
+                "displayCalendar": {
+                    "value": false
+                },
+                "Round_desc": {
+                    "value": "Waste-GW3-300126"
+                },
+                "Collection_Date": {
+                    "value": "30/01/2026, 07:00"
+                },
+                "Assisted_comments": {
+                    "value": null
+                },
+                "changedDate": {
+                    "readonly": true,
+                    "value": 1770147940798
+                },
+                "daysUntil": {
+                    "value": "0"
+                },
+                "collectionDateParse": {
+                    "value": 1769756400000
+                },
+                "createdDate": {
+                    "readonly": true,
+                    "value": 1770147940791
+                },
+                "DisplayCalendarAdminGW": {
+                    "value": false
+                },
+                "Assisted": {
+                    "value": null
+                },
+                "IsPast": {
+                    "value": true
+                },
+                "calendarLink": {
+                    "value": null
+                },
+                "UPRN": {
+                    "value": "22058876"
+                },
+                "BartecDescription": {
+                    "value": "Garden 240L bin"
+                },
+                "Round_day": {
+                    "value": "Friday"
+                },
+                "displayCalendarAdminRec": {
+                    "value": false
+                },
+                "Formatted_collection": {
+                    "value": "30 January 2026"
+                },
+                "CollectionToday": {
+                    "value": false
+                },
+                "Collections.CollectionsReturned_Collection": {
+                    "value": "32088147651587159"
+                },
+                "System.owner": {
+                    "readonly": true,
+                    "value": "281475650469225"
+                },
+                "CollectionDaysAgo": {
+                    "value": "4"
+                },
+                "TimeInMinutes": {
+                    "value": "1185.67985"
+                },
+                "Collection_type": {
+                    "value": "Garden Waste"
+                },
+                "WorkPackID": {
+                    "value": "14103"
+                },
+                "BartecStatus": {
+                    "value": "Closed-Complete"
+                },
+                "Round_type": {
+                    "value": null
+                }
+            }
+        }
+    ],
+    "resets": {
+        "32088147651587159": [
+            "DisplayCollectionsButton",
+            "changedDate",
+            "Collections.Collection_Address",
+            "System.changedBy"
+        ]
+    }
+}

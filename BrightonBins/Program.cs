@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BrightonBins;
 using BrightonBins.Dtos;
-using System.Linq;
-using System.Text.Json;
 
 // To run in browser, start here:
 // https://enviroservices.brighton-hove.gov.uk/link/collections
@@ -22,14 +20,13 @@ var httpClient = new HttpClient();
 
 // Step 1: Initialize session
 Console.WriteLine("Initializing session...");
-var initResponse = await httpClient.GetAsync(INIT_URL);
-initResponse.EnsureSuccessStatusCode();
+var initResponse = await httpClient.GetStringAsync(INIT_URL);
 
 // Step 2: Get session data
 Console.WriteLine("Getting session data...");
-var initPostDto = await httpClient.PostAsJsonTypedAsync<Dictionary<string, object>, ResponseDto>(API_URL, new Dictionary<string, object>() {
+var sessionDataDto = await httpClient.PostAsJsonTypedAsync<Dictionary<string, object>, ResponseDto>(API_URL, new Dictionary<string, object>() {
     { "action", "get_session_data" },
-    {"params", new Dictionary<string, object>() {
+    {"params", new Dictionary<string, object?>() {
         { "hybrid", false},
         { "offline", false},
         { "referrer", null},
@@ -42,7 +39,7 @@ var initPostDto = await httpClient.PostAsJsonTypedAsync<Dictionary<string, objec
 });
 
 Console.WriteLine("\n=== DEBUG: Initial Session Objects ===");
-var collectionObject = initPostDto.Objects.FirstOrDefault(o => o.ObjectType == "Collections.Collection");
+var collectionObject = sessionDataDto.Objects.FirstOrDefault(o => o.ObjectType == "Collections.Collection");
 if (collectionObject != null)
 {
     Console.WriteLine($"Found Collection object: {collectionObject.Guid}");
@@ -57,7 +54,7 @@ if (collectionObject != null)
 else
 {
     Console.WriteLine("ERROR: No Collection object in initial session!");
-    foreach (var obj in initPostDto.Objects)
+    foreach (var obj in sessionDataDto.Objects)
     {
         Console.WriteLine($"  Type: {obj.ObjectType}, GUID: {obj.Guid}");
     }
@@ -68,21 +65,19 @@ else
 var collectionGuid = collectionObject.Guid;
 
 // Set CSRF token for subsequent requests
-httpClient.DefaultRequestHeaders.Add("x-csrf-token", initPostDto.CsrfToken);
+httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionDataDto.CsrfToken);
 
 // Step 3: Get operations XML
 Console.WriteLine("\nFetching operations...");
-var operationsResponse = await httpClient.GetAsync(operations_url);
-operationsResponse.EnsureSuccessStatusCode();
-var operationsResponseStr = await operationsResponse.Content.ReadAsStringAsync();
+var operationsResponse = await httpClient.GetAsString(operations_url);
 
 // Step 4: Look up postcode
 Console.WriteLine($"Looking up postcode: {postCode}...");
-var addressGuid = initPostDto.Objects.First(a => a.ObjectType == "BHCCTheme.Address").Guid;
+var addressGuid = sessionDataDto.Objects.First(a => a.ObjectType == "BHCCTheme.Address").Guid;
 
 // Create a deep copy of changes and add the search string
 var postcodeLookupChanges = new Dictionary<long, Dictionary<string, HashValue>>(
-    initPostDto.Changes.ToDictionary(
+    sessionDataDto.Changes.ToDictionary(
         kvp => kvp.Key,
         kvp => new Dictionary<string, HashValue>(kvp.Value)
     )
@@ -91,9 +86,9 @@ postcodeLookupChanges[long.Parse(addressGuid)]["SearchString"] = new HashValue()
 
 var postCodeLookupDto = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, new RequestDto()
 {
-    OperationId = RegexTools.GetPostCodeOperationId(operationsResponseStr),
+    OperationId = RegexTools.GetPostCodeOperationId(operationsResponse),
     Changes = postcodeLookupChanges,
-    Objects = initPostDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
+    Objects = sessionDataDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
     Params = new() { { "Address", new() { { "guid", addressGuid } } } }
 });
 
@@ -123,7 +118,7 @@ Console.WriteLine("\n=== Preparing collection schedule request ===");
 
 // Merge changes from both responses
 var scheduleChanges = new Dictionary<long, Dictionary<string, HashValue>>(
-    postCodeLookupDto.Changes.Concat(initPostDto.Changes).DistinctBy(a => a.Key).ToDictionary(
+    postCodeLookupDto.Changes.Concat(sessionDataDto.Changes).DistinctBy(a => a.Key).ToDictionary(
         kvp => kvp.Key,
         kvp => new Dictionary<string, HashValue>(kvp.Value)
     )
@@ -155,7 +150,7 @@ if (!scheduleObjects.Any(o => o.ObjectType == "Collections.Collection"))
 Console.WriteLine("\n=== Sending Schedule Request ===");
 var scheduleResponse = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, new RequestDto()
 {
-    OperationId = RegexTools.GetScheduleOperationId(operationsResponseStr),
+    OperationId = RegexTools.GetScheduleOperationId(operationsResponse),
     Changes = scheduleChanges,
     Objects = scheduleObjects.OrderBy(a => a.ObjectType).ToArray(),
     Params = new() { { "Collection", new() { { "guid", collectionGuid } } } }

@@ -32,7 +32,7 @@ public class AutoNumberToStringConverter : JsonConverter<string>
 
         if (reader.TokenType == JsonTokenType.String)
         {
-            return reader.GetString();
+            return reader.GetString()!;
         }
 
         using var document = JsonDocument.ParseValue(ref reader);
