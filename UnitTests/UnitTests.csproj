@@ -7,9 +7,13 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="JsonResponses\AddressSelection.json" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
