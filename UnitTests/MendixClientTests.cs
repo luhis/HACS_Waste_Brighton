@@ -51,13 +51,14 @@ public class MendixClientTests
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
             && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")
             && dto.Params["Address"]["guid"].StartsWith("309622")
+            && HasKeys(dto.Changes, new[] { "309622", "32088147" })
             ))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
             dto => dto.OperationId.StartsWith("DExhrgP") 
             && dto.Params["Collection"]["guid"].StartsWith("32088147")
-            && new[] { "309622", "32088" }.All(k => dto.Changes.Keys.Any(x => x.ToString().StartsWith(k)))
+            && HasKeys(dto.Changes, new[] { "309622", "32088147" })
             ))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
@@ -71,6 +72,12 @@ public class MendixClientTests
         res.Where(a => a.Attributes["Collection_Date"].Value == "13/02/2026, 07:00").Should().NotBeEmpty();
 
         handler.VerifyAll();
+    }
+
+    private static bool HasKeys(IReadOnlyDictionary<long, Dictionary<string, HashValue>> dict, IReadOnlyList<string> keyStarts)
+    {
+        var keys = dict.Keys.Select(a => a.ToString());
+        return keyStarts.All(k => keys.Any(x => x.StartsWith(k)));
     }
 
     private static async Task<bool> HasActionAsync<T>(HttpContent content, string expectedAction, Func<T, bool> pred) where T : RequestDtoBase
