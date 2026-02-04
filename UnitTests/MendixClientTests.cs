@@ -35,6 +35,9 @@ public class MendixClientTests
         handler.VerifyAll();
     }
 
+    const string CollectionsCollection = "32088147";
+    const string BHCCThemeAddress = "309622";
+
     [Fact]
     public async Task GetSchedule_Filtered()
     {
@@ -50,15 +53,17 @@ public class MendixClientTests
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
             && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")
-            && dto.Params["Address"]["guid"].StartsWith("309622")
-            && HasKeys(dto.Changes, new[] { "309622", "32088147" })
+            && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
+            && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+            && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
             ))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
             dto => dto.OperationId.StartsWith("DExhrgP") 
-            && dto.Params["Collection"]["guid"].StartsWith("32088147")
-            && HasKeys(dto.Changes, new[] { "309622", "32088147" })
+            && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
+            && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+            && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
             ))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
@@ -72,6 +77,12 @@ public class MendixClientTests
         res.Where(a => a.Attributes["Collection_Date"].Value == "13/02/2026, 07:00").Should().NotBeEmpty();
 
         handler.VerifyAll();
+    }
+
+    private bool HasGuids(ObjectDto[] objects, string[] guidStarts)
+    {
+        var keys = objects.Select(a => a.Guid);
+        return guidStarts.All(k => keys.Any(x => x.StartsWith(k)));
     }
 
     private static bool HasKeys(IReadOnlyDictionary<long, Dictionary<string, HashValue>> dict, IReadOnlyList<string> keyStarts)
