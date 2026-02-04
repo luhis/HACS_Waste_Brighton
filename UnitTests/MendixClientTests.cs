@@ -18,10 +18,15 @@ public class MendixClientTests
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/link/collections")
             .ReturnsResponse(System.Net.HttpStatusCode.OK);
-        handler.SetupRequestSequence(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/")
-            .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"))
-            .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"))
-            .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
+
+        var sequence = new MockSequence() { Cyclic = false, };
+        handler.InSequence(sequence).SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/")
+            .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
+        handler.InSequence(sequence).SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/")
+        .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
+        handler.InSequence(sequence).SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/")
+        .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
+
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml").ReturnsResponse(TestFileTools.GetFile("JobsGetCombined.page.xml"));
 
         IMendixClient client = new MendixClient(httpClient);
