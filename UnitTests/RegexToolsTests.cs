@@ -1,12 +1,11 @@
 ﻿using BrightonBins;
 using FluentAssertions;
-using System.Threading.Tasks;
 
 namespace UnitTests;
 
 public class RegexToolsTests
 {
-    private readonly string Input = System.IO.File.ReadAllText("../../../JsonResponses/JobsGetCombined.page.xml");
+    private readonly string Input = TestFileTools.GetFile("JobsGetCombined.page.xml");
 
     [Fact]
     public void GetPostCodeOperationId()

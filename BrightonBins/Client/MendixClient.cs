@@ -8,9 +8,9 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
     const string INIT_URL = $"{BASE_URL}link/collections";
     const string API_URL = $"{BASE_URL}xas/";
     const string operations_url = $"{BASE_URL}pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml";
-    private readonly IReadOnlyDictionary<string, object> GetSessionDataRequest = new Dictionary<string, object>() {
-            { "action", "get_session_data" },
-            {"params", new Dictionary<string, object?>() {
+    private readonly SessionDataRequestDto GetSessionDataRequest = new SessionDataRequestDto()
+    {
+        Params = new Dictionary<string, object?>()  {
                 { "hybrid", false},
                 { "offline", false},
                 { "referrer", null},
@@ -19,8 +19,8 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
                 { "timezoneId", "Europe/London"},
                 { "preferredLanguages", new[] {"en-GB", "en-US", "en" } },
                 { "version", 2}
-            } }
-        };
+            }
+    };
 
     async Task<IReadOnlyList<ObjectDto>> IMendixClient.GetSchedule(string postCode, long uprn)
     {
@@ -30,7 +30,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         // Step 2: Get session data
         Console.WriteLine("Getting session data...");
-        var sessionDataDto = await httpClient.PostAsJsonTypedAsync<IReadOnlyDictionary<string, object>, ResponseDto>(API_URL, GetSessionDataRequest);
+        var sessionDataDto = await httpClient.PostAsJsonTypedAsync<SessionDataRequestDto, ResponseDto>(API_URL, GetSessionDataRequest);
 
         Console.WriteLine("\n=== DEBUG: Initial Session Objects ===");
         var collectionObject = sessionDataDto.Objects.FirstOrDefault(o => o.ObjectType == "Collections.Collection");
@@ -78,7 +78,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         );
         postcodeLookupChanges[long.Parse(addressGuid)]["SearchString"] = new HashValue() { Value = postCode };
 
-        var postCodeLookupDto = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, new RequestDto()
+        var postCodeLookupDto = await httpClient.PostAsJsonTypedAsync<RuntimeOperationRequestDto, ResponseDto>(API_URL, new RuntimeOperationRequestDto()
         {
             OperationId = RegexTools.GetPostCodeOperationId(operationsResponse),
             Changes = postcodeLookupChanges,
@@ -101,8 +101,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             {
                 Console.WriteLine($"  UPRN: {change.Value["uprn"].Value} (Change ID: {change.Key})");
             }
-            Console.ReadLine();
-            throw new Exception("Fail");
+            throw new Exception("UPRN Not found");
         }
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
@@ -142,7 +141,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         }
 
         Console.WriteLine("\n=== Sending Schedule Request ===");
-        var scheduleResponse = await httpClient.PostAsJsonTypedAsync<RequestDto, ResponseDto>(API_URL, new RequestDto()
+        var scheduleResponse = await httpClient.PostAsJsonTypedAsync<RuntimeOperationRequestDto, ResponseDto>(API_URL, new RuntimeOperationRequestDto()
         {
             OperationId = RegexTools.GetScheduleOperationId(operationsResponse),
             Changes = scheduleChanges,

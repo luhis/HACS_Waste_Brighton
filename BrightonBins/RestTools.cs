@@ -5,7 +5,7 @@ namespace BrightonBins;
 
 public static class RestTools
 {
-    private static readonly JsonSerializerOptions serialiserSettings = new(JsonSerializerDefaults.Web)
+    public static readonly JsonSerializerOptions serialiserSettings = new(JsonSerializerDefaults.Web)
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
