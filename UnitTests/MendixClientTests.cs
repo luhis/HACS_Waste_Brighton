@@ -49,11 +49,16 @@ public class MendixClientTests
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
-            && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")))
+            && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")
+            && dto.Params["Address"]["guid"].StartsWith("309622")
+            ))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
-            dto => dto.OperationId.StartsWith("DExhrgP") && dto.Params["Collection"]["guid"].StartsWith("32088147")))
+            dto => dto.OperationId.StartsWith("DExhrgP") 
+            && dto.Params["Collection"]["guid"].StartsWith("32088147")
+            && new[] { "309622", "32088" }.All(k => dto.Changes.Keys.Any(x => x.ToString().StartsWith(k)))
+            ))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml").ReturnsResponse(TestFileTools.GetFile("JobsGetCombined.page.xml"));
