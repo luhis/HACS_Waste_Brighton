@@ -47,9 +47,13 @@ public class MendixClientTests
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/", 
             request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data", _ => true))
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
-        handler.SetupRequestSequence(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/", 
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", _ => true))
-            .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"))
+        handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
+            && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")))
+            .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
+        handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
+            dto => dto.OperationId.StartsWith("DExhrgP") && dto.Params["Collection"]["guid"].StartsWith("32088147")))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml").ReturnsResponse(TestFileTools.GetFile("JobsGetCombined.page.xml"));
