@@ -45,10 +45,10 @@ public class MendixClientTests
             .ReturnsResponse(System.Net.HttpStatusCode.OK);
 
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/", 
-            request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data"))
+            request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data", _ => true))
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
         handler.SetupRequestSequence(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/", 
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation"))
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", _ => true))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
@@ -64,11 +64,11 @@ public class MendixClientTests
         handler.VerifyAll();
     }
 
-    private static async Task<bool> HasActionAsync<T>(HttpContent content, string expectedAction) where T : RequestDtoBase
+    private static async Task<bool> HasActionAsync<T>(HttpContent content, string expectedAction, Func<T, bool> pred) where T : RequestDtoBase
     {
         var json = (JsonContent)content;
         var dto = (RequestDtoBase)json.Value!;
 
-        return dto.Action == expectedAction;
+        return dto.Action == expectedAction && pred((T)dto);
     }
 }
