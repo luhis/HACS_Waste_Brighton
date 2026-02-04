@@ -52,7 +52,7 @@ public class MendixClientTests
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
-            && dto.Changes.Any(c => c.Value.ContainsKey("SearchString") && c.Value["SearchString"].Value == "BN1 8NT")
+            && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
             && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
             && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
             && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
@@ -79,7 +79,7 @@ public class MendixClientTests
         handler.VerifyAll();
     }
 
-    private bool HasGuids(ObjectDto[] objects, string[] guidStarts)
+    private static bool HasGuids(ObjectDto[] objects, string[] guidStarts)
     {
         var keys = objects.Select(a => a.Guid);
         return guidStarts.All(k => keys.Any(x => x.StartsWith(k)));
@@ -89,6 +89,12 @@ public class MendixClientTests
     {
         var keys = dict.Keys.Select(a => a.ToString());
         return keyStarts.All(k => keys.Any(x => x.StartsWith(k)));
+    }
+
+    private static IReadOnlyDictionary<string, HashValue> GetKeyValue(IReadOnlyDictionary<long, Dictionary<string, HashValue>> dict, string keyStart)
+    {
+        var key = dict.Keys.Single(k => k.ToString().StartsWith(keyStart));
+        return dict[key];
     }
 
     private static async Task<bool> HasActionAsync<T>(HttpContent content, string expectedAction, Func<T, bool> pred) where T : RequestDtoBase
