@@ -47,11 +47,11 @@ public class MendixClientTests
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/link/collections")
             .ReturnsResponse(System.Net.HttpStatusCode.OK);
 
-        handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/", 
+        handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data", _ => true))
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc")
             && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
             && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
             && dto.Params.Count == 1
@@ -62,8 +62,8 @@ public class MendixClientTests
             ))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
-            dto => dto.OperationId.StartsWith("DExhrgP") 
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation",
+            dto => dto.OperationId.StartsWith("DExhrgP")
             && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
             //&& dto.Params.Count == 1
             && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })

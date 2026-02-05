@@ -1,6 +1,6 @@
 ﻿namespace BrightonBins.Dtos;
 
-public class RuntimeOperationRequestDto: RequestDtoBase
+public class RuntimeOperationRequestDto : RequestDtoBase
 {
     public RuntimeOperationRequestDto()
     {
