@@ -131,7 +131,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         // Merge objects - use postCodeLookupDto objects but ensure Collection object is included
         var scheduleObjects = postCodeLookupDto.Objects
-            .Where(a => a.ObjectType != "DeepLink.DeepLink")
+            .Where(a => a.ObjectType != "DeepLink.DeepLink" && a.ObjectType != "BHCCTheme.CentralHub_Results")
             .ToList();
 
         // Make sure Collection object is included (it should be from the postcode lookup, but add it if not)

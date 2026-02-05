@@ -88,8 +88,8 @@ public class MendixClientTests
         && dto.Params.Count == 1
         && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable })
         && dto.Changes.Count == 44
-        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable });
-        //&& dto.Objects.Length == 44;
+        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable })
+        && dto.Objects.Length == 44;
 
     private static bool HasGuids(ObjectDto[] objects, string[] guidStarts)
     {
