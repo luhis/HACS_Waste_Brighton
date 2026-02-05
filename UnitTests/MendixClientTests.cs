@@ -65,7 +65,7 @@ public class MendixClientTests
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation",
             dto => dto.OperationId.StartsWith("DExhrgP")
             && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
-            //&& dto.Params.Count == 1
+            && dto.Params.Count == 1
             && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
             //&& dto.Changes.Count == 44
             && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
