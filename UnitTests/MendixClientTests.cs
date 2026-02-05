@@ -54,16 +54,22 @@ public class MendixClientTests
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc") 
             && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
             && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
+            && dto.Params.Count == 1
             && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+            && dto.Changes.Count == 2
             && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
+            && dto.Objects.Length == 2
             ))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", 
             dto => dto.OperationId.StartsWith("DExhrgP") 
             && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
+            //&& dto.Params.Count == 1
             && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+            //&& dto.Changes.Count == 44
             && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
+            //&& dto.Objects.Length == 44
             ))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
