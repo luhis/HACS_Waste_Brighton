@@ -37,7 +37,7 @@ public class MendixClientTests
 
     const string CollectionsCollection = "32088147";
     const string BHCCThemeAddress = "309622";
-    const string missingItems = "1491819";
+    const string BHCCThemeAddressTempTable = "1491819";
 
     [Fact]
     public async Task GetSchedule_Filtered()
@@ -49,29 +49,13 @@ public class MendixClientTests
             .ReturnsResponse(System.Net.HttpStatusCode.OK);
 
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data", _ => true))
+            request => HasActionAsync<SessionDataRequestDto>(request.Content!, "get_session_data", IsValidSessionDataRequest))
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", dto => dto.OperationId.StartsWith("tglPIXhc")
-            && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
-            && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
-            && dto.Params.Count == 1
-            && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
-            && dto.Changes.Count == 2
-            && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
-            && dto.Objects.Length == 2
-            ))
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", IsValidPostCodeSearchRequest))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation",
-            dto => dto.OperationId.StartsWith("DExhrgP")
-            && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
-            && dto.Params.Count == 1
-            && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
-            //&& dto.Changes.Count == 44
-            && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
-            //&& dto.Objects.Length == 44
-            ))
+            request => HasActionAsync<RuntimeOperationRequestDto>(request.Content!, "runtimeOperation", IsValidAddressSelectionRequest))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml").ReturnsResponse(TestFileTools.GetFile("JobsGetCombined.page.xml"));
@@ -85,6 +69,27 @@ public class MendixClientTests
 
         handler.VerifyAll();
     }
+
+    private static bool IsValidSessionDataRequest(SessionDataRequestDto dto) => true;
+
+    private static bool IsValidPostCodeSearchRequest(RuntimeOperationRequestDto dto) =>
+        dto.OperationId.StartsWith("tglPIXhc")
+        && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
+        && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
+        && dto.Params.Count == 1
+        && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+        && dto.Changes.Count == 2
+        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
+        && dto.Objects.Length == 2;
+
+    private static bool IsValidAddressSelectionRequest(RuntimeOperationRequestDto dto) =>
+        dto.OperationId.StartsWith("DExhrgP")
+        && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
+        && dto.Params.Count == 1
+        && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable })
+        && dto.Changes.Count == 44
+        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable });
+        //&& dto.Objects.Length == 44;
 
     private static bool HasGuids(ObjectDto[] objects, string[] guidStarts)
     {
