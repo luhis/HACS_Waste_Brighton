@@ -118,12 +118,12 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         );
 
         // Set the Collection's selectedAddress to point to the selected UPRN change ID
-        var collectionChangeKey = long.Parse(collectionGuid);
-        if (!scheduleChanges.ContainsKey(collectionChangeKey))
-        {
-            scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
-        }
-        scheduleChanges[collectionChangeKey]["selectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
+        ///var collectionChangeKey = long.Parse(collectionGuid);
+        //if (!scheduleChanges.ContainsKey(collectionChangeKey))
+        //{
+        //    scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
+        //}
+        //scheduleChanges[collectionChangeKey]["selectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
         // use changes from get session data
 
         Console.WriteLine($"Collection GUID: {collectionGuid}");
