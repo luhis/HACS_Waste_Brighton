@@ -7,7 +7,7 @@ namespace UnitTests;
 
 public class RequestUnitTests
 {
-    [Fact(Skip = "wip")]
+    [Fact]
     public void CompareFromWebsiteAndFromAppJsonRequests()
     {
         // Arrange
@@ -26,8 +26,7 @@ public class RequestUnitTests
         fromWebsite.Action.Should().Be("runtimeOperation");
 
         // Assert - Operation IDs should start with the same prefix
-        fromWebsite.OperationId.Should().StartWith("DExhrgP");
-        fromApp.OperationId.Should().StartWith("DExhrgP");
+        fromApp.OperationId.Should().StartWith(fromWebsite.OperationId);
 
         // Assert - Params structure
         fromWebsite.Params.Should().ContainKey("Collection");
@@ -51,8 +50,7 @@ public class RequestUnitTests
         ComparisonTools.HasGuids(fromApp.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
             .Should().BeTrue("FromApp should contain all expected object types");
 
-        fromWebsite.Objects.Length.Should().Be(44);
-        fromApp.Objects.Length.Should().Be(44);
+        fromApp.Objects.Length.Should().Be(fromWebsite.Objects.Length);
 
         // Assert - Collection object should have DisplayCollectionsButton set
         var fromWebsiteCollection = ComparisonTools.GetKeyValue(fromWebsite.Changes, BHCCMendixConstants.CollectionsCollection);

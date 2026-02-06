@@ -70,7 +70,7 @@ public class MendixClientTests
     private static bool IsValidSessionDataRequest(SessionDataRequestDto dto) => true;
 
     private static bool IsValidPostCodeSearchRequest(RuntimeOperationRequestDto dto) =>
-        dto.OperationId.StartsWith("tglPIXhc")
+        dto.OperationId == "tglPIXhcJ1abaQ1fhKJvYA"
         && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
         && dto.Params["Address"]["guid"].StartsWith(BHCCMendixConstants.BHCCThemeAddress)
         && dto.Params.Count == 1
@@ -80,7 +80,7 @@ public class MendixClientTests
         && dto.Objects.Length == 2;
 
     private static bool IsValidAddressSelectionRequest(RuntimeOperationRequestDto dto) =>
-        dto.OperationId.StartsWith("DExhrgP")
+        dto.OperationId == "DExhrgP93VCBOks+s8GjTQ"
         && dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection)
         && dto.Params.Count == 1
         && ComparisonTools.HasKeys(dto.Changes, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
