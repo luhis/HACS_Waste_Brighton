@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using Moq.Contrib.HttpClient;
 using System.Net.Http.Json;
+using UnitTests.Tooling;
 
 namespace UnitTests;
 
@@ -34,10 +35,6 @@ public class MendixClientTests
 
         handler.VerifyAll();
     }
-
-    const string CollectionsCollection = "32088147";
-    const string BHCCThemeAddress = "309622";
-    const string BHCCThemeAddressTempTable = "1491819";
 
     [Fact]
     public async Task GetSchedule_Filtered()
@@ -74,40 +71,22 @@ public class MendixClientTests
 
     private static bool IsValidPostCodeSearchRequest(RuntimeOperationRequestDto dto) =>
         dto.OperationId.StartsWith("tglPIXhc")
-        && GetKeyValue(dto.Changes, BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
-        && dto.Params["Address"]["guid"].StartsWith(BHCCThemeAddress)
+        && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
+        && dto.Params["Address"]["guid"].StartsWith(BHCCMendixConstants.BHCCThemeAddress)
         && dto.Params.Count == 1
-        && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection })
+        && ComparisonTools.HasKeys(dto.Changes, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection })
         && dto.Changes.Count == 2
-        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection })
+        && ComparisonTools.HasGuids(dto.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection })
         && dto.Objects.Length == 2;
 
     private static bool IsValidAddressSelectionRequest(RuntimeOperationRequestDto dto) =>
         dto.OperationId.StartsWith("DExhrgP")
-        && dto.Params["Collection"]["guid"].StartsWith(CollectionsCollection)
+        && dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection)
         && dto.Params.Count == 1
-        && HasKeys(dto.Changes, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable })
+        && ComparisonTools.HasKeys(dto.Changes, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && dto.Changes.Count == 44
-        && HasGuids(dto.Objects, new[] { BHCCThemeAddress, CollectionsCollection, BHCCThemeAddressTempTable })
+        && ComparisonTools.HasGuids(dto.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && dto.Objects.Length == 44;
-
-    private static bool HasGuids(ObjectDto[] objects, string[] guidStarts)
-    {
-        var keys = objects.Select(a => a.Guid);
-        return guidStarts.All(k => keys.Any(x => x.StartsWith(k)));
-    }
-
-    private static bool HasKeys(IReadOnlyDictionary<long, Dictionary<string, HashValue>> dict, IReadOnlyList<string> keyStarts)
-    {
-        var keys = dict.Keys.Select(a => a.ToString());
-        return keyStarts.All(k => keys.Any(x => x.StartsWith(k)));
-    }
-
-    private static IReadOnlyDictionary<string, HashValue> GetKeyValue(IReadOnlyDictionary<long, Dictionary<string, HashValue>> dict, string keyStart)
-    {
-        var key = dict.Keys.Single(k => k.ToString().StartsWith(keyStart));
-        return dict[key];
-    }
 
     private static async Task<bool> HasActionAsync<T>(HttpContent content, string expectedAction, Func<T, bool> pred) where T : RequestDtoBase
     {

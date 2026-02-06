@@ -1,5 +1,6 @@
 ﻿using BrightonBins;
 using FluentAssertions;
+using UnitTests.Tooling;
 
 namespace UnitTests;
 
