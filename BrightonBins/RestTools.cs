@@ -8,7 +8,7 @@ public static class RestTools
     public static readonly JsonSerializerOptions serialiserSettings = new(JsonSerializerDefaults.Web)
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.Never,
         Converters =
         {
             new Converter.AutoNumberToStringConverter()
