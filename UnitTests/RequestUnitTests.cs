@@ -1,6 +1,5 @@
 ﻿using BrightonBins;
 using BrightonBins.Dtos;
-using FluentAssertions;
 using UnitTests.Tooling;
 
 namespace UnitTests;
@@ -62,7 +61,7 @@ public class RequestUnitTests
         var fromAppCollection = ComparisonTools.GetKeyValue(fromApp.Changes, BHCCMendixConstants.CollectionsCollection);
 
         fromWebsiteCollection.Should().ContainKey("DisplayCollectionsButton");
-        //fromAppCollection.Should().ContainKey("DisplayCollectionsButton"); todo bring back
+        fromAppCollection.Should().ContainKey("DisplayCollectionsButton");
 
         // Assert - Address object should have SearchString in FromWebsite
         var fromWebsiteAddress = ComparisonTools.GetKeyValue(fromWebsite.Changes, BHCCMendixConstants.BHCCThemeAddress);
