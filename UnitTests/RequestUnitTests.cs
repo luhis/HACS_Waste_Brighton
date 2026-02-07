@@ -117,11 +117,12 @@ public class RequestUnitTests
         fromApp.Params["Collection"].Should().ContainKey("guid");
 
         // Assert - FromWebsite SearchString should be populated, FromApp should be null/empty
-        var fromWebsiteSearchString = fromWebsiteAddress["SearchString"].Value;
         var fromAppAddress = ComparisonTools.GetKeyValue(fromApp.Changes, BHCCMendixConstants.BHCCThemeAddress);
-        fromWebsiteSearchString.Should().Be("BN1 8NT");
+        fromWebsiteAddress["SearchString"].Value.Should().Be("BN1 8NT");
         fromAppAddress["SearchString"].Value.Should().Be("BN1 8NT");
-        
+        var x = fromAppAddress.Keys.Except(fromWebsiteAddress.Keys);
+        fromAppAddress.Keys.Should().BeEquivalentTo(fromWebsiteAddress.Keys);
+
 
         // Assert - Verify DateCreated timestamp format differences
         fromWebsiteTempAddresses.First().Attributes.Should().ContainKey("DateCreated");
