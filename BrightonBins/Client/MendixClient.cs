@@ -56,7 +56,8 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             throw new Exception("Fail");
         }
 
-        var collectionGuid = collectionObject.Guid;
+        var collectionGuid = long.Parse(collectionObject.Guid);
+        var BHCCThemeAddressGuid = long.Parse(sessionDataDto.Objects.Single(a => a.ObjectType == "BHCCTheme.Address").Guid);
 
         // Set CSRF token for subsequent requests
         httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionDataDto.CsrfToken);
@@ -118,12 +119,12 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         );
 
         // Set the Collection's selectedAddress to point to the selected UPRN change ID
-        var collectionChangeKey = long.Parse(collectionGuid);
         //if (!scheduleChanges.ContainsKey(collectionChangeKey))
         //{
         //    scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
         //}
-        scheduleChanges[collectionChangeKey]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
+        scheduleChanges[collectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
+        scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionGuid.ToString() };
         // use changes from get session data
 
         Console.WriteLine($"Collection GUID: {collectionGuid}");
@@ -146,7 +147,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             OperationId = RegexTools.GetScheduleOperationId(operationsResponse),
             Changes = scheduleChanges,
             Objects = scheduleObjects.OrderBy(a => a.ObjectType).ToArray(),
-            Params = new() { { "Collection", new() { { "guid", collectionGuid } } } }
+            Params = new() { { "Collection", new() { { "guid", collectionGuid.ToString() } } } }
         });
 
         Console.WriteLine("\n=== SUCCESS! Collection Schedule Retrieved ===");

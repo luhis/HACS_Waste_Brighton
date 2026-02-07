@@ -43,8 +43,8 @@ public class RequestUnitTests
         fromWebsite.Changes.Count.Should().Be(44);
         fromApp.Changes.Count.Should().Be(44);
 
-        //fromWebsite.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Should()
-        //    .HaveCount(fromApp.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Count());
+        fromWebsite.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Should()
+            .HaveCount(fromApp.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Count());
 
         // Assert - Objects structure
         ComparisonTools.HasGuids(fromWebsite.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
