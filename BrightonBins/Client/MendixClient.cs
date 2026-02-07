@@ -33,29 +33,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         var sessionDataDto = await httpClient.PostAsJsonTypedAsync<SessionDataRequestDto, ResponseDto>(API_URL, GetSessionDataRequest);
 
         Console.WriteLine("\n=== DEBUG: Initial Session Objects ===");
-        var collectionObject = sessionDataDto.Objects.FirstOrDefault(o => o.ObjectType == "Collections.Collection");
-        if (collectionObject != null)
-        {
-            Console.WriteLine($"Found Collection object: {collectionObject.Guid}");
-            if (collectionObject.Attributes != null)
-            {
-                foreach (var attr in collectionObject.Attributes)
-                {
-                    Console.WriteLine($"  {attr.Key}: {attr.Value.Value}");
-                }
-            }
-        }
-        else
-        {
-            Console.WriteLine("ERROR: No Collection object in initial session!");
-            foreach (var obj in sessionDataDto.Objects)
-            {
-                Console.WriteLine($"  Type: {obj.ObjectType}, GUID: {obj.Guid}");
-            }
-            Console.ReadLine();
-            throw new Exception("Fail");
-        }
-
+        var collectionObject = sessionDataDto.Objects.Single(o => o.ObjectType == "Collections.Collection");
         var collectionGuid = long.Parse(collectionObject.Guid);
         var BHCCThemeAddressGuid = long.Parse(sessionDataDto.Objects.Single(a => a.ObjectType == "BHCCTheme.Address").Guid);
 
@@ -68,7 +46,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         // Step 4: Look up postcode
         Console.WriteLine($"Looking up postcode: {postCode}...");
-        var addressGuid = sessionDataDto.Objects.First(a => a.ObjectType == "BHCCTheme.Address").Guid;
+        var addressGuid = long.Parse(sessionDataDto.Objects.Single(a => a.ObjectType == "BHCCTheme.Address").Guid);
 
         // Create a deep copy of changes and add the search string
         var postcodeLookupChanges = new Dictionary<long, Dictionary<string, HashValue>>(
@@ -77,14 +55,14 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
                 kvp => new Dictionary<string, HashValue>(kvp.Value)
             )
         );
-        postcodeLookupChanges[long.Parse(addressGuid)]["SearchString"] = new HashValue() { Value = postCode };
+        postcodeLookupChanges[addressGuid]["SearchString"] = new HashValue() { Value = postCode };
 
         var postCodeLookupDto = await httpClient.PostAsJsonTypedAsync<RuntimeOperationRequestDto, ResponseDto>(API_URL, new RuntimeOperationRequestDto()
         {
             OperationId = RegexTools.GetPostCodeOperationId(operationsResponse),
             Changes = postcodeLookupChanges,
             Objects = sessionDataDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
-            Params = new() { { "Address", new() { { "guid", addressGuid } } } }
+            Params = new() { { "Address", new() { { "guid", addressGuid.ToString() } } } }
         });
 
         // Step 5: Find the UPRN in the results
@@ -125,6 +103,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         //}
         scheduleChanges[collectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
         scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionGuid.ToString() };
+        scheduleChanges[addressGuid]["SearchString"] = new HashValue() { Value = postCode };
         // use changes from get session data
 
         Console.WriteLine($"Collection GUID: {collectionGuid}");
