@@ -46,6 +46,9 @@ public class RequestUnitTests
         fromWebsite.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Should()
             .HaveCount(fromApp.Changes.Where(a => a.Value.ContainsKey("Collections.Collection_Address")).Count());
 
+        ComparisonTools.GetKeyValue(fromWebsite.Changes, BHCCMendixConstants.BHCCThemeAddress).Keys.Should().BeEquivalentTo(ComparisonTools.GetKeyValue(fromApp.Changes, BHCCMendixConstants.BHCCThemeAddress).Keys);
+        //ComparisonTools.GetKeyValue(fromWebsite.Changes, BHCCMendixConstants.BHCCThemeAddressTempTable).Keys.Should().BeEquivalentTo(ComparisonTools.GetKeyValue(fromApp.Changes, BHCCMendixConstants.BHCCThemeAddressTempTable).Keys);
+
         // Assert - Objects structure
         ComparisonTools.HasGuids(fromWebsite.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
             .Should().BeTrue("FromWebsite should contain all expected object types");

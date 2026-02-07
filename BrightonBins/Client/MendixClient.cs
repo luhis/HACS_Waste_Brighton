@@ -82,6 +82,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             }
             throw new Exception("UPRN Not found");
         }
+        //var BHCCThemeAddressTempTable = long.Parse(postCodeLookupDto.Objects.Single(o => o.ObjectType == "BHCCTheme.AddressTempTable").Guid);
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
 
@@ -110,6 +111,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             scheduleChanges[BHCCThemeAddressGuid].Add(key, value);
         }
         scheduleChanges[addressGuid]["SearchString"] = new HashValue() { Value = postCode };
+        scheduleChanges[uprnChangeElement.Key]["BHCCTheme.AddressTemp_SelectedAddress"] = new HashValue() { Value = BHCCThemeAddressGuid.ToString() };// todo
         // use changes from get session data
 
         Console.WriteLine($"Collection GUID: {collectionGuid}");
