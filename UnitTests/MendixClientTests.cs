@@ -86,7 +86,9 @@ public class MendixClientTests
         && ComparisonTools.HasKeys(dto.Changes, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
         && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["Collections.Collection_Address"].Value.StartsWith(BHCCMendixConstants.CollectionsCollection)
+        && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["BHCCTheme.AddressTemp_SelectedAddress"].Value.StartsWith(BHCCMendixConstants.UprnChangeElement)
         && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.CollectionsCollection)["DisplayCollectionsButton"].Value == "True"
+        ////&& ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.UprnChangeElement)["BHCCTheme.AddressTemp_SelectedAddress"].Value.StartsWith(BHCCMendixConstants.BHCCThemeAddress)
         && dto.Changes.Count == 44
         && ComparisonTools.HasGuids(dto.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && dto.Objects.Length == 44;
