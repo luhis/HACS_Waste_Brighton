@@ -85,6 +85,8 @@ public class MendixClientTests
         && dto.Params.Count == 1
         && ComparisonTools.HasKeys(dto.Changes, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
+        && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["Collections.Collection_Address"].Value.StartsWith(BHCCMendixConstants.CollectionsCollection)
+        && ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.CollectionsCollection)["DisplayCollectionsButton"].Value == "True"
         && dto.Changes.Count == 44
         && ComparisonTools.HasGuids(dto.Objects, new[] { BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable })
         && dto.Objects.Length == 44;

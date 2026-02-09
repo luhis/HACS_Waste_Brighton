@@ -34,7 +34,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         Console.WriteLine("\n=== DEBUG: Initial Session Objects ===");
         var collectionObject = sessionDataDto.Objects.Single(o => o.ObjectType == "Collections.Collection");
-        var collectionGuid = long.Parse(collectionObject.Guid);
+        var collectionsCollectionGuid = long.Parse(collectionObject.Guid);
         var BHCCThemeAddressGuid = long.Parse(sessionDataDto.Objects.Single(a => a.ObjectType == "BHCCTheme.Address").Guid);
 
         // Set CSRF token for subsequent requests
@@ -72,17 +72,6 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         var uprnChangeElement = postCodeLookupDto.Changes
             .Single(a => a.Value.ContainsKey("uprn") && long.Parse(a.Value["uprn"].Value) == uprn);
 
-        if (uprnChangeElement.Key == 0)
-        {
-            Console.WriteLine($"ERROR: UPRN {uprn} not found for postcode {postCode}");
-            Console.WriteLine("\nAvailable UPRNs:");
-            foreach (var change in postCodeLookupDto.Changes.Where(c => c.Value.ContainsKey("uprn")))
-            {
-                Console.WriteLine($"  UPRN: {change.Value["uprn"].Value} (Change ID: {change.Key})");
-            }
-            throw new Exception("UPRN Not found");
-        }
-        //var BHCCThemeAddressTempTable = long.Parse(postCodeLookupDto.Objects.Single(o => o.ObjectType == "BHCCTheme.AddressTempTable").Guid);
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
 
@@ -102,8 +91,8 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         //{
         //    scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
         //}
-        scheduleChanges[collectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
-        scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionGuid.ToString() };
+        scheduleChanges[collectionsCollectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
+        scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionsCollectionGuid.ToString() };
         scheduleChanges[BHCCThemeAddressGuid]["BHCCTheme.AddressTemp_SelectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
         scheduleChanges[BHCCThemeAddressGuid].Remove("BHCCTheme.AddressTemp_ListOfAddresses");
         foreach(var (key, value) in uprnChangeElement.Value.Where(a => !scheduleChanges[BHCCThemeAddressGuid].ContainsKey(a.Key) && !new[] { "BHCCTheme.AddressTemp_ListOfAddresses", "DateCreated" }.Contains(a.Key)))
@@ -114,7 +103,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         scheduleChanges[uprnChangeElement.Key]["BHCCTheme.AddressTemp_SelectedAddress"] = new HashValue() { Value = BHCCThemeAddressGuid.ToString() };// todo
         // use changes from get session data
 
-        Console.WriteLine($"Collection GUID: {collectionGuid}");
+        Console.WriteLine($"Collection GUID: {collectionsCollectionGuid}");
         Console.WriteLine($"Setting selectedAddress to UPRN change ID: {uprnChangeElement.Key}");
 
         // Merge objects - use postCodeLookupDto objects but ensure Collection object is included
@@ -134,7 +123,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             OperationId = RegexTools.GetScheduleOperationId(operationsResponse),
             Changes = scheduleChanges,
             Objects = scheduleObjects.OrderBy(a => a.ObjectType).ToArray(),
-            Params = new() { { "Collection", new() { { "guid", collectionGuid.ToString() } } } }
+            Params = new() { { "Collection", new() { { "guid", collectionsCollectionGuid.ToString() } } } }
         });
 
         Console.WriteLine("\n=== SUCCESS! Collection Schedule Retrieved ===");
