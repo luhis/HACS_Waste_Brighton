@@ -70,7 +70,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         // Find the change entry with matching UPRN
         var uprnChangeElement = postCodeLookupDto.Changes
-            .Single(a => a.Value.ContainsKey("uprn") && long.Parse(a.Value["uprn"].Value) == uprn);
+            .Single(a => a.Value.ContainsKey("uprn") && (long.Parse((string)a.Value["uprn"].Value)) == uprn);
 
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
@@ -91,7 +91,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         //{
         //    scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
         //}
-        scheduleChanges[collectionsCollectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true.ToString() };
+        scheduleChanges[collectionsCollectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true };
         scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionsCollectionGuid.ToString() };
         scheduleChanges[BHCCThemeAddressGuid]["BHCCTheme.AddressTemp_SelectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
         scheduleChanges[BHCCThemeAddressGuid].Remove("BHCCTheme.AddressTemp_ListOfAddresses");
