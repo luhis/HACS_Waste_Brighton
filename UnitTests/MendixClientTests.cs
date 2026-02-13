@@ -2,6 +2,7 @@
 using BrightonBins.Dtos;
 using Moq;
 using Moq.Contrib.HttpClient;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using UnitTests.Tooling;
@@ -17,7 +18,7 @@ public class MendixClientTests
         var httpClient = handler.CreateClient();
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/link/collections")
-            .ReturnsResponse(System.Net.HttpStatusCode.OK);
+            .ReturnsResponse(HttpStatusCode.OK);
 
         handler.SetupRequestSequence(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/")
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"))
@@ -39,20 +40,24 @@ public class MendixClientTests
     [Fact]
     public async Task GetSchedule_Filtered()
     {
+        var cookieContainer = new CookieContainer();
         var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-        var httpClient = handler.CreateClient();
+        var httpClient = new HttpClient(new CookieAwareMockHandler(handler.Object, cookieContainer))
+        {
+            BaseAddress = new Uri("https://enviroservices.brighton-hove.gov.uk/")
+        };
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/link/collections")
-            .ReturnsResponse(System.Net.HttpStatusCode.OK);
+            .ReturnsResponse(HttpStatusCode.OK);
 
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
             request => HasActionAsync<SessionDataRequestDto>(request, _ => true, "get_session_data", IsValidSessionDataRequest))
             .ReturnsResponse(TestFileTools.GetFile("GetSessionData.json"), configure: AddHeadersForSession);
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request, IsHeadersValid, "runtimeOperation", IsValidPostCodeSearchRequest))
+            request => HasActionAsync<RuntimeOperationRequestDto>(request, AreHeadersValid, "runtimeOperation", IsValidPostCodeSearchRequest))
             .ReturnsResponse(TestFileTools.GetFile("PostCodeSearch.json"));
         handler.SetupRequest(HttpMethod.Post, "https://enviroservices.brighton-hove.gov.uk/xas/",
-            request => HasActionAsync<RuntimeOperationRequestDto>(request, IsHeadersValid, "runtimeOperation", IsValidAddressSelectionRequest))
+            request => HasActionAsync<RuntimeOperationRequestDto>(request, AreHeadersValid, "runtimeOperation", IsValidAddressSelectionRequest))
             .ReturnsResponse(TestFileTools.GetFile("AddressSelection.json"));
 
         handler.SetupRequest(HttpMethod.Get, "https://enviroservices.brighton-hove.gov.uk/pages/en_GB/BartecCollective/Jobs_Get_Combined.page.xml")
@@ -68,15 +73,17 @@ public class MendixClientTests
         handler.VerifyAll();
     }
 
-    private static void AddHeadersForSession(HttpResponseMessage message)
-    {
-        message.Headers.Add("set-cookie", [
+    private static readonly IEnumerable<string> _cookieValues = [
             "__Host-SessionTimeZoneOffset=0; Path=/; Secure; HttpOnly; SameSite=Strict",
             "__Host-XASSESSIONID=d311f779-18c5-415c-bd13-1b49b94800e8; Path=/; Secure; HttpOnly; SameSite=Strict",
             "xasid=0.f7b676b1-1fd9-45ad-b8dd-02259bec3e5d; Path=/; Secure; HttpOnly; SameSite=Strict",
             "__Host-DeviceType=Desktop; Path=/; Expires=Sat, 13 Feb 2027 16:32:31 GMT; Max-Age=31536000; Secure; HttpOnly; SameSite=Strict",
             "__Host-Profile=Responsive; Path=/; Expires=Sat, 13 Feb 2027 16:32:31 GMT; Max-Age=31536000; Secure; HttpOnly; SameSite=Strict"
-            ]);
+            ];
+
+    private static void AddHeadersForSession(HttpResponseMessage message)
+    {
+        message.Headers.Add("set-cookie", _cookieValues);
     }
 
     private static bool IsValidSessionDataRequest(SessionDataRequestDto dto) => true;
@@ -113,8 +120,40 @@ public class MendixClientTests
         return dto.Action == expectedAction && pred((T)dto) && headers(message.Headers);
     }
 
-    private static bool IsHeadersValid(HttpRequestHeaders h)
+    private static bool AreHeadersValid(HttpRequestHeaders h)
     {
-        return h.GetValues("x-csrf-token").Single() == "5f14fcf3-69da-49fe-b61e-d234188a48d5";
+        var expectedCookies = string.Join(" ", _cookieValues.Select(c => c.Split(" ").First())).TrimEnd(';');
+        return h.GetValues("x-csrf-token").SequenceEqual(["5f14fcf3-69da-49fe-b61e-d234188a48d5"]) && 
+            h.GetValues("Cookie").SequenceEqual([expectedCookies]);
+    }
+}
+
+file class CookieAwareMockHandler(HttpMessageHandler innerHandler, CookieContainer cookieContainer) : DelegatingHandler(innerHandler)
+{
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        // Add cookies to request
+        if (request.RequestUri != null)
+        {
+            var cookieHeader = cookieContainer.GetCookieHeader(request.RequestUri);
+            if (!string.IsNullOrEmpty(cookieHeader))
+            {
+                request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+            }
+        }
+
+        // Send request through mock handler
+        var response = await base.SendAsync(request, cancellationToken);
+
+        // Extract cookies from response
+        if (response.Headers.TryGetValues("Set-Cookie", out var setCookieHeaders) && request.RequestUri != null)
+        {
+            foreach (var setCookie in setCookieHeaders)
+            {
+                cookieContainer.SetCookies(request.RequestUri, setCookie);
+            }
+        }
+
+        return response;
     }
 }
