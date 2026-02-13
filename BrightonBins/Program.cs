@@ -11,7 +11,14 @@ Console.WriteLine("Brighton Bins Collection Lookup");
 const string postCode = "BN1 8NT";
 const long Uprn = 22058876;
 
-IMendixClient client = new MendixClient(new HttpClient());
+var cookieContainer = new System.Net.CookieContainer();
+var handler = new HttpClientHandler
+{
+    UseCookies = true,
+    CookieContainer = cookieContainer
+};
+
+IMendixClient client = new MendixClient(new HttpClient(handler));
 
 await client.GetSchedule(postCode, Uprn);
 
