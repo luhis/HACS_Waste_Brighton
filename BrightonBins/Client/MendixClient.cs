@@ -38,7 +38,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         var BHCCThemeAddressGuid = long.Parse(sessionDataDto.Objects.Single(a => a.ObjectType == "BHCCTheme.Address").Guid);
 
         // Set CSRF token for subsequent requests
-        httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionDataDto.CsrfToken);
+        httpClient.DefaultRequestHeaders.Add("x-csrf-token", sessionDataDto.CsrfToken.ToString());
 
         // Step 3: Get operations XML
         Console.WriteLine("\nFetching operations...");

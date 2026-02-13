@@ -6,5 +6,5 @@ public class ResponseDto
 
     public required ObjectDto[] Objects { get; init; }
 
-    public string? CsrfToken { get; init; }
+    public Guid? CsrfToken { get; init; }
 }
