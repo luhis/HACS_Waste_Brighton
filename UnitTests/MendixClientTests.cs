@@ -107,7 +107,7 @@ public class MendixClientTests
         && ((string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["Collections.Collection_Address"].Value).StartsWith(BHCCMendixConstants.CollectionsCollection)
         && ((string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["BHCCTheme.AddressTemp_SelectedAddress"].Value).StartsWith(BHCCMendixConstants.UprnChangeElement)
         && (bool)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.CollectionsCollection)["DisplayCollectionsButton"].Value == true
-        ////&& ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.UprnChangeElement)["BHCCTheme.AddressTemp_SelectedAddress"].Value.StartsWith(BHCCMendixConstants.BHCCThemeAddress)
+        && ((string)ComparisonTools.GetKeyValue(dto.Changes.Where(a => a.Value.ContainsKey("BHCCTheme.AddressTemp_SelectedAddress")).ToDictionary(x => x.Key, x => x.Value), BHCCMendixConstants.UprnChangeElement)["BHCCTheme.AddressTemp_SelectedAddress"].Value).StartsWith(BHCCMendixConstants.BHCCThemeAddress)
         && dto.Changes.Count == 44
         && ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable])
         && dto.Objects.Length == 44;
