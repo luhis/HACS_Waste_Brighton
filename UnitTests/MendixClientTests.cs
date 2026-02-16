@@ -93,26 +93,25 @@ public class MendixClientTests
         if (dto.OperationId != "tglPIXhcJ1abaQ1fhKJvYA")
             return false;
 
-        var searchString = ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress).Value<string>("SearchString");
-        if (searchString != "BN1 8NT")
+        if (dto.Params.Count != 1)
             return false;
 
         if (!dto.Params["Address"]["guid"].StartsWith(BHCCMendixConstants.BHCCThemeAddress))
             return false;
 
-        if (dto.Params.Count != 1)
+        if (dto.Changes.Count != 2)
+            return false;
+
+        if (ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress).Value<string>("SearchString") != "BN1 8NT")
             return false;
 
         if (!ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection]))
             return false;
 
-        if (dto.Changes.Count != 2)
+        if (dto.Objects.Length != 2)
             return false;
 
         if (!ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection]))
-            return false;
-
-        if (dto.Objects.Length != 2)
             return false;
 
         return true;
@@ -123,13 +122,16 @@ public class MendixClientTests
         if (dto.OperationId != "DExhrgP93VCBOks+s8GjTQ")
             return false;
 
-        if (!dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection))
-            return false;
-
         if (dto.Params.Count != 1)
             return false;
 
+        if (!dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection))
+            return false;
+
         if (!ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable]))
+            return false;
+
+        if (dto.Changes.Count != 44)
             return false;
 
         var addressChanges = ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress);
@@ -150,13 +152,10 @@ public class MendixClientTests
         if (!uprnChanges.Value<string>("BHCCTheme.AddressTemp_SelectedAddress").StartsWith(BHCCMendixConstants.BHCCThemeAddress))
             return false;
 
-        if (dto.Changes.Count != 44)
+        if (dto.Objects.Length != 44)
             return false;
 
         if (!ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable]))
-            return false;
-
-        if (dto.Objects.Length != 44)
             return false;
 
         return true;
