@@ -88,29 +88,79 @@ public class MendixClientTests
 
     private static bool IsValidSessionDataRequest(SessionDataRequestDto dto) => true;
 
-    private static bool IsValidPostCodeSearchRequest(RuntimeOperationRequestDto dto) =>
-        dto.OperationId == "tglPIXhcJ1abaQ1fhKJvYA"
-        && (string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
-        && dto.Params["Address"]["guid"].StartsWith(BHCCMendixConstants.BHCCThemeAddress)
-        && dto.Params.Count == 1
-        && ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection])
-        && dto.Changes.Count == 2
-        && ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection])
-        && dto.Objects.Length == 2;
+    private static bool IsValidPostCodeSearchRequest(RuntimeOperationRequestDto dto)
+    {
+        if (dto.OperationId != "tglPIXhcJ1abaQ1fhKJvYA")
+            return false;
 
-    private static bool IsValidAddressSelectionRequest(RuntimeOperationRequestDto dto) =>
-        dto.OperationId == "DExhrgP93VCBOks+s8GjTQ"
-        && dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection)
-        && dto.Params.Count == 1
-        && ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable])
-        && (string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["SearchString"].Value == "BN1 8NT"
-        && ((string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["Collections.Collection_Address"].Value).StartsWith(BHCCMendixConstants.CollectionsCollection)
-        && ((string)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress)["BHCCTheme.AddressTemp_SelectedAddress"].Value).StartsWith(BHCCMendixConstants.UprnChangeElement)
-        && (bool)ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.CollectionsCollection)["DisplayCollectionsButton"].Value == true
-        && ((string)ComparisonTools.GetKeyValue(dto.Changes.Where(a => a.Value.ContainsKey("BHCCTheme.AddressTemp_SelectedAddress")).ToDictionary(x => x.Key, x => x.Value), BHCCMendixConstants.UprnChangeElement)["BHCCTheme.AddressTemp_SelectedAddress"].Value).StartsWith(BHCCMendixConstants.BHCCThemeAddress)
-        && dto.Changes.Count == 44
-        && ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable])
-        && dto.Objects.Length == 44;
+        var searchString = ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress).Value<string>("SearchString");
+        if (searchString != "BN1 8NT")
+            return false;
+
+        if (!dto.Params["Address"]["guid"].StartsWith(BHCCMendixConstants.BHCCThemeAddress))
+            return false;
+
+        if (dto.Params.Count != 1)
+            return false;
+
+        if (!ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection]))
+            return false;
+
+        if (dto.Changes.Count != 2)
+            return false;
+
+        if (!ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection]))
+            return false;
+
+        if (dto.Objects.Length != 2)
+            return false;
+
+        return true;
+    }
+
+    private static bool IsValidAddressSelectionRequest(RuntimeOperationRequestDto dto)
+    {
+        if (dto.OperationId != "DExhrgP93VCBOks+s8GjTQ")
+            return false;
+
+        if (!dto.Params["Collection"]["guid"].StartsWith(BHCCMendixConstants.CollectionsCollection))
+            return false;
+
+        if (dto.Params.Count != 1)
+            return false;
+
+        if (!ComparisonTools.HasKeys(dto.Changes, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable]))
+            return false;
+
+        var addressChanges = ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.BHCCThemeAddress);
+        if (addressChanges.Value<string>("SearchString") != "BN1 8NT")
+            return false;
+
+        if (!addressChanges.Value<string>("Collections.Collection_Address").StartsWith(BHCCMendixConstants.CollectionsCollection))
+            return false;
+
+        if (!addressChanges.Value<string>("BHCCTheme.AddressTemp_SelectedAddress").StartsWith(BHCCMendixConstants.UprnChangeElement))
+            return false;
+
+        var collectionChanges = ComparisonTools.GetKeyValue(dto.Changes, BHCCMendixConstants.CollectionsCollection);
+        if (collectionChanges.Value<bool>("DisplayCollectionsButton") != true)
+            return false;
+
+        var uprnChanges = ComparisonTools.GetKeyValue(dto.Changes.Where(a => a.Value.ContainsKey("BHCCTheme.AddressTemp_SelectedAddress")).ToDictionary(x => x.Key, x => x.Value), BHCCMendixConstants.UprnChangeElement);
+        if (!uprnChanges.Value<string>("BHCCTheme.AddressTemp_SelectedAddress").StartsWith(BHCCMendixConstants.BHCCThemeAddress))
+            return false;
+
+        if (dto.Changes.Count != 44)
+            return false;
+
+        if (!ComparisonTools.HasGuids(dto.Objects, [BHCCMendixConstants.BHCCThemeAddress, BHCCMendixConstants.CollectionsCollection, BHCCMendixConstants.BHCCThemeAddressTempTable]))
+            return false;
+
+        if (dto.Objects.Length != 44)
+            return false;
+
+        return true;
+    }
 
     private static async Task<bool> HasActionAsync<T>(HttpRequestMessage message, Func<HttpRequestHeaders, bool> headers, string expectedAction, Func<T, bool> pred) where T : RequestDtoBase
     {
