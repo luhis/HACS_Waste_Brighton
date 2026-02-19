@@ -14,6 +14,7 @@ public static class RestTools
             new Converter.AutoNumberToStringConverter()
         }
     };
+
     public static async Task<TR> PostAsJsonTypedAsync<T, TR>(this HttpClient httpClient, string url, T data)
     {
         var response = await httpClient.PostAsJsonAsync(url, data, serialiserSettings);
@@ -22,7 +23,8 @@ public static class RestTools
         {
             var s = JsonSerializer.Serialize(data, serialiserSettings);
             var error = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"{error} {s}");
+            Console.WriteLine($"Error: {error}");
+            Console.WriteLine($"Dto: {s}");
         }
 
         response.EnsureSuccessStatusCode();
