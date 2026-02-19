@@ -5,5 +5,4 @@ public static class BHCCMendixConstants
     public const string CollectionsCollection = "3208814765";
     public const string BHCCThemeAddress =      "309622517";
     public const string BHCCThemeAddressTempTable = "14918190";
-    public const string UprnChangeElement = BHCCThemeAddressTempTable; // is this correct?
 }

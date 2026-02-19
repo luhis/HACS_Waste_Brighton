@@ -22,6 +22,9 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             }
     };
 
+    private static IEnumerable<ObjectDto> FilterDeepLinks(IEnumerable<ObjectDto> objects) =>
+        objects.Where(a => a.ObjectType != "DeepLink.DeepLink");
+
     async Task<IReadOnlyList<ObjectDto>> IMendixClient.GetSchedule(string postCode, long uprn)
     {
         // Step 1: Initialize session
@@ -61,7 +64,7 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         {
             OperationId = RegexTools.GetPostCodeOperationId(operationsResponse),
             Changes = postcodeLookupChanges,
-            Objects = sessionDataDto.Objects.Where(a => a.ObjectType != "DeepLink.DeepLink").OrderBy(a => a.ObjectType).ToArray(),
+            Objects = FilterDeepLinks(sessionDataDto.Objects).OrderBy(a => a.ObjectType).ToArray(),
             Params = new() { { "Address", new() { { "guid", addressGuid.ToString() } } } }
         });
 
@@ -70,10 +73,19 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
 
         // Find the change entry with matching UPRN
         var uprnChangeElement = postCodeLookupDto.Changes
-            .Single(a => a.Value.ContainsKey("uprn") && (long.Parse((string)a.Value["uprn"].Value)) == uprn);
+            .Single(a => a.Value.ContainsKey("uprn") && long.Parse((string)a.Value["uprn"].Value) == uprn);
 
 
         Console.WriteLine($"Found UPRN {uprn} at Change ID: {uprnChangeElement.Key}");
+
+        postcodeLookupChanges.Add(uprnChangeElement.Key, new() { {"BHCCTheme.AddressTemp_SelectedAddress",  new HashValue() { Value = BHCCThemeAddressGuid.ToString() }} });// todo
+        var validateResponse = await httpClient.PostAsJsonTypedAsync<RuntimeOperationRequestDto, ResponseDto>(API_URL, new RuntimeOperationRequestDto()
+        {
+            OperationId = "e0vap2Ppt1qKtqKsrXkgeQ",
+            Changes = postcodeLookupChanges,
+            Objects = FilterDeepLinks(sessionDataDto.Objects).Concat(postCodeLookupDto.Objects.Where(a => a.ObjectType == "BHCCTheme.AddressTempTable").Take(1)).OrderBy(a => a.ObjectType).ToArray(),
+            Params = new() { { "Collection", new() { { "guid", collectionsCollectionGuid.ToString() } } }, { "Address", new() { { "guid", addressGuid.ToString() } } } }
+        });
 
         // Step 6: Prepare schedule request
         Console.WriteLine("\n=== Preparing collection schedule request ===");
@@ -86,11 +98,6 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
             )
         );
 
-        // Set the Collection's selectedAddress to point to the selected UPRN change ID
-        //if (!scheduleChanges.ContainsKey(collectionChangeKey))
-        //{
-        //    scheduleChanges[collectionChangeKey] = new Dictionary<string, HashValue>();
-        //}
         scheduleChanges[collectionsCollectionGuid]["DisplayCollectionsButton"] = new HashValue() { Value = true };
         scheduleChanges[BHCCThemeAddressGuid]["Collections.Collection_Address"] = new HashValue() { Value = collectionsCollectionGuid.ToString() };
         scheduleChanges[BHCCThemeAddressGuid]["BHCCTheme.AddressTemp_SelectedAddress"] = new HashValue() { Value = uprnChangeElement.Key.ToString() };
@@ -109,13 +116,8 @@ public class MendixClient(HttpClient httpClient) : IMendixClient
         // Merge objects - use postCodeLookupDto objects but ensure Collection object is included
         var scheduleObjects = postCodeLookupDto.Objects
             .Where(a => a.ObjectType != "DeepLink.DeepLink" && a.ObjectType != "BHCCTheme.CentralHub_Results")
+            .Concat([collectionObject])
             .ToList();
-
-        // Make sure Collection object is included (it should be from the postcode lookup, but add it if not)
-        if (!scheduleObjects.Any(o => o.ObjectType == "Collections.Collection"))
-        {
-            scheduleObjects.Add(collectionObject);
-        }
 
         Console.WriteLine("\n=== Sending Schedule Request ===");
         var scheduleResponse = await httpClient.PostAsJsonTypedAsync<RuntimeOperationRequestDto, ResponseDto>(API_URL, new RuntimeOperationRequestDto()
