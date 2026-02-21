@@ -10,8 +10,8 @@ public class RequestUnitTests
     public void CompareFromWebsiteAndFromAppJsonRequests()
     {
         // Arrange
-        var fromWebsiteJson = File.ReadAllText("../../../JsonRequests/FromWebsite.json");
-        var fromAppJson = File.ReadAllText("../../../JsonRequests/FromApp.json");
+        var fromWebsiteJson = File.ReadAllText("../../../JsonRequests/Schedule/FromWebsite.json");
+        var fromAppJson = File.ReadAllText("../../../JsonRequests/Schedule/FromApp.json");
 
         var fromWebsite = System.Text.Json.JsonSerializer.Deserialize<RuntimeOperationRequestDto>(fromWebsiteJson, RestTools.serialiserSettings);
         var fromApp = System.Text.Json.JsonSerializer.Deserialize<RuntimeOperationRequestDto>(fromAppJson, RestTools.serialiserSettings);
